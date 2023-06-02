@@ -29,11 +29,28 @@ if __name__ == "__main__":
             if i == j:
                 continue
             Piece.piece_difference(pList[i], pList[j])
+        Piece.update_piece(pList, pList[i])
+        # print("=====================")
+        # for j in range(i + 1, pCnt_total):
+        #     if i == j:
+        #         continue
+        #     Piece.piece_difference(pList[i], pList[j])
+    
+    
+    
+    # for i in range(len(pList)):        
+    #     Piece.update_piece(pList[i])
+        
+    for i in range(pCnt_total):
+        for j in range(i + 1, pCnt_total):
+            if i == j:
+                continue
+            Piece.piece_difference(pList[i], pList[j])
 
     # determine starting pixel to fill in image
     startPiece = None
     for piece in pList:
-        Piece.find_neighbors(piece)
+        Piece.find_neighbors(piece)      
         if piece.neighbors[0] is None and piece.neighbors[3] is None:
             startPiece = piece
     if startPiece is None:
