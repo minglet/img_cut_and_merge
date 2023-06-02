@@ -1,5 +1,5 @@
 import numpy as np
-
+import pdb
 
 # Piece class, holds data of each piece
 class Piece:
@@ -43,32 +43,54 @@ def pixel_difference(px1, px2):
 
 
 # calculate different pixels between two sides
-def side_difference(side1, side2):
+def side_difference(side1, side2, mirror=False):
     difference = 0
-    for i in range(len(side1)):
-        difference += 1 if pixel_difference(side1[i], side2[i]) else 0
+    side2_mirror = side2[::-1]
+    if mirror:
+        for i in range(len(side1)):
+            difference += 1 if pixel_difference(side1[i], side2_mirror[i]) else 0
+    else:
+        for i in range(len(side1)):
+            difference += 1 if pixel_difference(side1[i], side2[i]) else 0
     return difference
 
 
 # calculate difference between two pieces in all directions
 def piece_difference(piece1: Piece, piece2: Piece):
-    vertical_12 = side_difference(piece1.sideDown, piece2.sideUp)
-    vertical_21 = side_difference(piece2.sideDown, piece1.sideUp)
-    horizontal_12 = side_difference(piece1.sideRight, piece2.sideLeft)
-    horizontal_21 = side_difference(piece2.sideRight, piece1.sideLeft)
-
+    top_basic = side_difference(piece1.sideUp, piece2.sideDown)
+    top_rot90 = side_difference(piece1.sideUp, piece2.sideRight)
+    top_rot270 = side_difference(piece1.sideUp, piece2.sideLeft)
+    top_flip = side_difference(piece1.sideUp, piece2.sideUp)
+    top_mirror = side_difference(piece1.sideUp, piece2.sideDown, mirror=True)
+    right_basic = side_difference(piece1.sideRight, piece2.sideLeft)
+    right_rot90 = side_difference(piece1.sideRight, piece2.sideDown)
+    right_rot270 = side_difference(piece1.sideRight, piece2.sideUp)
+    right_flip = side_difference(piece1.sideRight, piece2.sideRight)
+    right_mirror = side_difference(piece1.sideRight, piece2.sideLeft, mirror=True)
+    bottom_basic = side_difference(piece1.sideDown, piece2.sideUp)
+    bottom_rot90 = side_difference(piece1.sideDown, piece2.sideLeft)
+    bottom_rot270 = side_difference(piece1.sideDown, piece2.sideRight)
+    bottom_flip = side_difference(piece1.sideDown, piece2.sideDown)
+    bottom_mirror = side_difference(piece1.sideDown, piece2.sideUp, mirror=True)
+    left_basic = side_difference(piece1.sideLeft, piece2.sideRight)
+    left_rot90 = side_difference(piece1.sideLeft, piece2.sideUp)
+    left_rot270 = side_difference(piece1.sideLeft, piece2.sideDown)
+    left_flip = side_difference(piece1.sideLeft, piece2.sideLeft)
+    left_mirror = side_difference(piece1.sideLeft, piece2.sideRight, mirror=True)
+    
     # clockwise direction
-    temp1 = [vertical_21, horizontal_12, vertical_12, horizontal_21]
-    temp2 = [vertical_12, horizontal_21, vertical_21, horizontal_12]
-
+    temp1 = [[top_basic, top_rot90, top_rot270, top_flip, top_mirror], [right_basic, right_rot90, right_rot270, right_flip, right_mirror], \
+        [bottom_basic, bottom_rot90, bottom_rot270, bottom_flip, bottom_mirror], [left_basic, left_rot90, left_rot270, left_flip, left_mirror]]
+    temp2 = [[bottom_basic, bottom_rot90, bottom_rot270, bottom_flip, bottom_mirror], [left_basic, left_rot90, left_rot270, left_flip, left_mirror], \
+        [top_basic, top_rot90, top_rot270, top_flip, top_mirror], [right_basic, right_rot90, right_rot270, right_flip, right_mirror]]
+    
     for i in range(len(temp1)):
-        temp1[i] = (temp1[i], i)
-        temp2[i] = (temp2[i], i)
-
+        temp1[i] = (min(temp1[i]), i, temp1[i].index(min(temp1[i])))
+        temp2[i] = (min(temp2[i]), i, temp2[i].index(min(temp2[i])))
+        
     # non-decreasing sort of difference
     piece1.difference[piece2.pieceNum] = sorted(temp1)
     piece2.difference[piece1.pieceNum] = sorted(temp2)
-
 
 # search for neighbors
 def find_neighbors(piece: Piece):
