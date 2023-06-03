@@ -35,7 +35,7 @@ class Piece:
 
 # determine difference of pixel's each channel value
 def pixel_difference(px1, px2):
-    PIXEL_DIFFERENCE_THRESHOLD = 45
+    PIXEL_DIFFERENCE_THRESHOLD = 30
     diff = 0
     for i in range(len(px1)):
         diff += abs(int(px1[i] - int(px2[i])))
@@ -43,112 +43,55 @@ def pixel_difference(px1, px2):
 
 
 # calculate different pixels between two sides
-def side_difference(side1, side2, mirror=False):
+def side_difference(side1, side2, reverse=False):
     difference = 0
-    if mirror:
-        side2_mirror = side2[::-1]  
+    if reverse:
+        side2_reverse = side2[::-1]  
         for i in range(len(side1)):
-            difference += 1 if pixel_difference(side1[i], side2_mirror[i]) else 0
+            difference += 1 if pixel_difference(side1[i], side2_reverse[i]) else 0
     else:
         for i in range(len(side1)):
             difference += 1 if pixel_difference(side1[i], side2[i]) else 0
     return difference
-
-def piece_difference_test(piece1: Piece, piece2: Piece):
-    # 8가지 경우의 수 나누기
-    top_basic = side_difference(piece1.sideUp, piece2.sideDown)
-    top_rot270 = side_difference(piece1.sideUp, piece2.sideRight)
-    top_rot90 = side_difference(piece1.sideUp, piece2.sideLeft)
-    top_flip = side_difference(piece1.sideUp, piece2.sideUp)
-    top_mirror = side_difference(piece1.sideUp, piece2.sideDown, mirror=True)
-    top_mir_flp = side_difference(piece1.sideUp, piece2.sideUp, mirror=True)
-    top_mir_r270 = side_difference(piece1.sideUp, piece2.sideLeft, mirror=True)
-    top_mir_r90 = side_difference(piece1.sideUp, piece2.sideRight, mirror=True)
-    
-    right_basic = side_difference(piece1.sideRight, piece2.sideLeft)
-    right_rot270 = side_difference(piece1.sideRight, piece2.sideDown)
-    right_rot90 = side_difference(piece1.sideRight, piece2.sideUp)
-    right_flip = side_difference(piece1.sideRight, piece2.sideLeft, mirror=True)
-    right_mirror = side_difference(piece1.sideRight, piece2.sideRight)
-    right_mir_flp = side_difference(piece1.sideRight, piece2.sideRight, mirror=True)
-    right_mir_r270 = side_difference(piece1.sideRight, piece2.sideDown, mirror=True)
-    right_mir_r90 = side_difference(piece1.sideRight, piece2.sideUp, mirror=True)
-    
-    bottom_basic = side_difference(piece1.sideDown, piece2.sideUp)
-    bottom_rot270 = side_difference(piece1.sideDown, piece2.sideLeft)
-    bottom_rot90 = side_difference(piece1.sideDown, piece2.sideRight)
-    bottom_flip = side_difference(piece1.sideDown, piece2.sideDown)
-    bottom_mirror = side_difference(piece1.sideDown, piece2.sideUp, mirror=True)
-    bottom_mir_flp = side_difference(piece1.sideDown, piece2.sideDown, mirror=True)
-    bottom_mir_r270 = side_difference(piece1.sideDown, piece2.sideRight, mirror=True)
-    bottom_mir_r90 = side_difference(piece1.sideDown, piece2.sideLeft, mirror=True)
-    
-    left_basic = side_difference(piece1.sideLeft, piece2.sideRight)
-    left_rot270 = side_difference(piece1.sideLeft, piece2.sideUp)
-    left_rot90 = side_difference(piece1.sideLeft, piece2.sideDown)
-    left_flip = side_difference(piece1.sideLeft, piece2.sideRight, mirror=True)
-    left_mirror = side_difference(piece1.sideLeft, piece2.sideLeft)
-    left_mir_flp = side_difference(piece1.sideLeft, piece2.sideLeft, mirror=True)
-    left_mir_r270 = side_difference(piece1.sideLeft, piece2.sideUp, mirror=True)
-    left_mir_r90 = side_difference(piece1.sideLeft, piece2.sideDown, mirror=True)
-    
-    # clockwise direction
-    temp1 = [[top_basic, top_rot90, top_rot270, top_flip, top_mirror, top_mir_flp, top_mir_r90, top_mir_r270], \
-        [right_basic, right_rot90, right_rot270, right_flip, right_mirror, right_mir_flp, right_mir_r90, right_mir_r270], \
-        [bottom_basic, bottom_rot90, bottom_rot270, bottom_flip, bottom_mirror, bottom_mir_flp, bottom_mir_r90, bottom_mir_r270],\
-        [left_basic, left_rot90, left_rot270, left_flip, left_mirror, left_mir_flp, left_mir_r90, left_mir_r270]]
-    
-    temp2 = [[bottom_basic, bottom_rot90, bottom_rot270, bottom_flip, bottom_mirror, bottom_mir_flp, bottom_mir_r90, bottom_mir_r270], \
-        [left_basic, left_rot90, left_rot270, left_flip, left_mirror, left_mir_flp, left_mir_r90, left_mir_r270], \
-        [top_basic, top_rot90, top_rot270, top_flip, top_mirror, top_mir_flp, top_mir_r90, top_mir_r270], \
-        [right_basic, right_rot90, right_rot270, right_flip, right_mirror, right_mir_flp, right_mir_r90, right_mir_r270]]
-    
-    for i in range(len(temp1)):
-        temp1[i] = (min(temp1[i]), i, temp1[i].index(min(temp1[i]))) # (3, 0, 4)
-        temp2[i] = (min(temp2[i]), i, -1)
-    # print("===temp1===")
-    # print(temp1)
-    # print("===temp2===")
-    # print(temp2)
         
 # calculate difference between two pieces in all directions
 def piece_difference(piece1: Piece, piece2: Piece):
     # 8가지 경우의 수 나누기
     top_basic = side_difference(piece1.sideUp, piece2.sideDown)
-    top_rot270 = side_difference(piece1.sideUp, piece2.sideRight)
     top_rot90 = side_difference(piece1.sideUp, piece2.sideLeft)
+    top_rot270 = side_difference(piece1.sideUp, piece2.sideRight)
     top_flip = side_difference(piece1.sideUp, piece2.sideUp)
-    top_mirror = side_difference(piece1.sideUp, piece2.sideDown, mirror=True)
-    top_mir_flp = side_difference(piece1.sideUp, piece2.sideUp, mirror=True)
-    top_mir_r270 = side_difference(piece1.sideUp, piece2.sideLeft, mirror=True)
-    top_mir_r90 = side_difference(piece1.sideUp, piece2.sideRight, mirror=True)
+    top_mirror = side_difference(piece1.sideUp, piece2.sideDown, reverse=True)
+    top_mir_flp = side_difference(piece1.sideUp, piece2.sideUp, reverse=True)
+    top_mir_r90 = side_difference(piece1.sideUp, piece2.sideRight, reverse=True)
+    top_mir_r270 = side_difference(piece1.sideUp, piece2.sideLeft, reverse=True)
     
     right_basic = side_difference(piece1.sideRight, piece2.sideLeft)
-    right_rot270 = side_difference(piece1.sideRight, piece2.sideDown)
-    right_rot90 = side_difference(piece1.sideRight, piece2.sideUp)
-    right_flip = side_difference(piece1.sideRight, piece2.sideLeft, mirror=True)
+    right_rot90 = side_difference(piece1.sideRight, piece2.sideUp, reverse=True)
+    right_rot270 = side_difference(piece1.sideRight, piece2.sideDown, reverse=True)
+    right_flip = side_difference(piece1.sideRight, piece2.sideLeft, reverse=True)
     right_mirror = side_difference(piece1.sideRight, piece2.sideRight)
-    right_mir_flp = side_difference(piece1.sideRight, piece2.sideRight, mirror=True)
-    right_mir_r270 = side_difference(piece1.sideRight, piece2.sideDown, mirror=True)
-    right_mir_r90 = side_difference(piece1.sideRight, piece2.sideUp, mirror=True)
+    right_mir_flp = side_difference(piece1.sideRight, piece2.sideRight, reverse=True)
+    right_mir_r90 = side_difference(piece1.sideRight, piece2.sideUp)
+    right_mir_r270 = side_difference(piece1.sideRight, piece2.sideDown)
     
     bottom_basic = side_difference(piece1.sideDown, piece2.sideUp)
-    bottom_rot270 = side_difference(piece1.sideDown, piece2.sideLeft)
     bottom_rot90 = side_difference(piece1.sideDown, piece2.sideRight)
+    bottom_rot270 = side_difference(piece1.sideDown, piece2.sideLeft)
     bottom_flip = side_difference(piece1.sideDown, piece2.sideDown)
-    bottom_mirror = side_difference(piece1.sideDown, piece2.sideUp, mirror=True)
-    bottom_mir_flp = side_difference(piece1.sideDown, piece2.sideDown, mirror=True)
-    bottom_mir_r270 = side_difference(piece1.sideDown, piece2.sideRight, mirror=True)
-    bottom_mir_r90 = side_difference(piece1.sideDown, piece2.sideLeft, mirror=True)
+    bottom_mirror = side_difference(piece1.sideDown, piece2.sideUp, reverse=True)
+    bottom_mir_flp = side_difference(piece1.sideDown, piece2.sideDown, reverse=True)
+    bottom_mir_r90 = side_difference(piece1.sideDown, piece2.sideLeft, reverse=True)
+    bottom_mir_r270 = side_difference(piece1.sideDown, piece2.sideRight, reverse=True)
     
     left_basic = side_difference(piece1.sideLeft, piece2.sideRight)
-    left_rot270 = side_difference(piece1.sideLeft, piece2.sideUp)
-    left_rot90 = side_difference(piece1.sideLeft, piece2.sideDown)
-    left_flip = side_difference(piece1.sideLeft, piece2.sideRight, mirror=True)
+    left_rot90 = side_difference(piece1.sideLeft, piece2.sideDown, reverse=True)
+    left_rot270 = side_difference(piece1.sideLeft, piece2.sideUp, reverse=True)
+    left_flip = side_difference(piece1.sideLeft, piece2.sideRight, reverse=True)
     left_mirror = side_difference(piece1.sideLeft, piece2.sideLeft)
-    left_mir_flp = side_difference(piece1.sideLeft, piece2.sideLeft, mirror=True)
-    left_mir_r270 = side_difference(piece1.sideLeft, piece2.sideUp, mirror=True)
-    left_mir_r90 = side_difference(piece1.sideLeft, piece2.sideDown, mirror=True)
+    left_mir_flp = side_difference(piece1.sideLeft, piece2.sideLeft, reverse=True)
+    left_mir_r90 = side_difference(piece1.sideLeft, piece2.sideDown)
+    left_mir_r270 = side_difference(piece1.sideLeft, piece2.sideUp)
     
     # clockwise direction
     temp1 = [[top_basic, top_rot90, top_rot270, top_flip, top_mirror, top_mir_flp, top_mir_r90, top_mir_r270], \
@@ -168,6 +111,7 @@ def piece_difference(piece1: Piece, piece2: Piece):
     # non-decreasing sort of difference
     piece1.difference[piece2.pieceNum] = sorted(temp1)
     piece2.difference[piece1.pieceNum] = sorted(temp2)
+    
     
 def rotate(temp, angle, hor, ver):
     center = (hor // 2, ver // 2)
@@ -210,7 +154,7 @@ def effector(piece: Piece, num):
 
 # search for neighbors
 def update_piece(pList, piece: Piece):
-    DIFFERENCE_RATE_THRESHOLD = 0.6
+    DIFFERENCE_RATE_THRESHOLD = 0.4
     candidates = [None for x in range(4)]
     # find the best candidate for each direction
     for i in range(len(piece.difference)):
@@ -219,7 +163,7 @@ def update_piece(pList, piece: Piece):
         temp = piece.difference[i][0] # (60,0,2)
         if candidates[temp[1]] is None or candidates[temp[1]][1][0] > temp[0]:
             candidates[temp[1]] = (i, temp)
-    # print(candidates)
+
     for entry in candidates:
         if entry is not None and entry[1][0] <= DIFFERENCE_RATE_THRESHOLD *\
                 (piece.size_vertical if (entry[1][1] == 1 or entry[1][1] == 3) else piece.size_horizontal):
@@ -234,12 +178,10 @@ def update_piece(pList, piece: Piece):
                         for i in range(target_piece.size_vertical):
                             target_piece.sideRight[i] = target_piece.pieceData[i][-1]
                             target_piece.sideLeft[i] = target_piece.pieceData[i][0]
-           
-                    
-  
-
+                 
 def find_neighbors(piece: Piece):
-    DIFFERENCE_RATE_THRESHOLD = 0.6
+    piece.neighbors = [None for x in range(4)]
+    DIFFERENCE_RATE_THRESHOLD = 0.4
     candidates = [None for x in range(4)]
     # find the best candidate for each direction
     for i in range(len(piece.difference)):
@@ -248,9 +190,12 @@ def find_neighbors(piece: Piece):
         temp = piece.difference[i][0] # (60,0,2)
         if candidates[temp[1]] is None or candidates[temp[1]][1][0] > temp[0]:
             candidates[temp[1]] = (i, temp)
-            
+
     # test if candidate is eligible as neighbor
     for entry in candidates:
         if entry is not None and entry[1][0] <= DIFFERENCE_RATE_THRESHOLD *\
                 (piece.size_vertical if (entry[1][1] == 1 or entry[1][1] == 3) else piece.size_horizontal):
             piece.neighbors[entry[1][1]] = entry[0]
+    neighbor = piece.neighbors
+    neighbor = [value for value in neighbor if value is not None]
+    return neighbor
