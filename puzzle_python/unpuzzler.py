@@ -28,29 +28,33 @@ if __name__ == "__main__":
             if i == j:
                 continue
             Piece.piece_difference(pList[i], pList[j])
-        # print("pList[i].difference")
-        # print(pList[i].difference)
         Piece.update_piece(pList, pList[i])
-    # print("=========1=============")
 
     next_list = [0]
-    left_list = []
+    unique_list = []
     while True:
         if len(next_list) == 0:
             break
         else:
             i = next_list[0]
-            if i in left_list:
+            if i in unique_list:
                 next_list.pop(0)
             else:
                 next_list.extend(Piece.find_neighbors(pList[i]))
                 next_list.pop(0)
-                left_list.append(i)
+                unique_list.append(i)
     
-    unique_list = []
-    for item in left_list:
-        if item not in unique_list:
-            unique_list.append(item)
+    if len(unique_list) != pCnt_total:
+        temp_list = [x for x in range(pCnt_total)]
+        for tmp in temp_list:
+            found = False
+            for num in unique_list:
+                if num == tmp:
+                    found = True
+                    break
+            if not found:
+                unique_list.append(tmp)
+    
     for i in range(pCnt_total):
         for j in range(i + 1, pCnt_total):
             if i == j:
@@ -73,7 +77,6 @@ if __name__ == "__main__":
     if len(startPiece) == 0:
         print("Could not find starting piece... but here is an attempt.")
         startPiece.append(pList[0])
-    # print(startPiece)
     # fill in image using neighbor information
     black = np.zeros((pSize_vertical, pSize_horizontal, imgChn), dtype=np.uint8)
     blackPiece = Piece.Piece(-1, pSize_vertical, pSize_horizontal, imgChn, (0, 0), black, pCnt_total)
@@ -84,10 +87,6 @@ if __name__ == "__main__":
     trash = []
     while True:
         i = next_i[0]
-        # print("next_i")
-        # print(next_i)
-        # print("trash")
-        # print(trash)
         if i in trash:
             next_i.pop(0)
             if len(next_i) == 0:
@@ -109,11 +108,7 @@ if __name__ == "__main__":
                 next_i.append(i - 1)
             next_i.pop(0)
             trash.append(i)
-    # for i in range(pCnt_total):
-    #         if i % pCnt_row < pCnt_row - 1 and temp[i].neighbors[1] is not None:
-    #             temp[i + 1] = pList[temp[i].neighbors[1]]
-    #         if i / pCnt_row < pCnt_column - 1 and temp[i].neighbors[2] is not None:
-    #             temp[i + pCnt_row] = pList[temp[i].neighbors[2]]
+            
     # show and save result image
     filename = os.path.splitext(filename)[0] + "_solve.png"
     temp = drawP.combine_pieces(pSize_vertical, pSize_horizontal, pCnt_row, pCnt_column, pCnt_total, imgChn, temp)
