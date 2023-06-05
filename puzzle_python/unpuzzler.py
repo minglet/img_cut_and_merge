@@ -112,5 +112,6 @@ if __name__ == "__main__":
     # show and save result image
     filename = os.path.splitext(filename)[0] + "_solve.png"
     temp = drawP.combine_pieces(pSize_vertical, pSize_horizontal, pCnt_row, pCnt_column, pCnt_total, imgChn, temp)
+    print(temp.shape)
     drawP.draw_image(temp, filename + " - Solved Image")
     cv2.imwrite(filename, temp)

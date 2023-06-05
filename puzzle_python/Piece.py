@@ -19,12 +19,24 @@ class Piece:
         self.sideLeft = []
 
         for i in range(self.size_horizontal):
-            self.sideUp.append(self.pieceData[0][i])
-            self.sideDown.append(self.pieceData[-1][i])
+            if (self.pieceData[0][i] == 0).all():
+                self.sideUp.append(self.pieceData[1][i])    
+            else:
+                self.sideUp.append(self.pieceData[0][i])
+            if (self.pieceData[-1][i] == 0).all():
+                self.sideDown.append(self.pieceData[-2][i])
+            else:
+                self.sideDown.append(self.pieceData[-1][i])
 
         for i in range(self.size_vertical):
-            self.sideRight.append(self.pieceData[i][-1])
-            self.sideLeft.append(self.pieceData[i][0])
+            if (self.pieceData[i][-1] == 0).all():
+                self.sideRight.append(self.pieceData[i][-2])    
+            else:
+                self.sideRight.append(self.pieceData[i][-1])
+            if (self.pieceData[i][0] == 0).all():
+                self.sideLeft.append(self.pieceData[i][1])
+            else:
+                self.sideLeft.append(self.pieceData[i][0])
 
         self.sides = [self.sideUp, self.sideRight, self.sideDown, self.sideLeft]
 
@@ -229,14 +241,27 @@ def update_piece(pList, piece: Piece):
                         target_piece = pList[entry[0]]
                         effector(target_piece, entry[1][2])
                         # side update
+                        target_piece.sideUp[i] = target_piece.pieceData[0][i]
                         for i in range(target_piece.size_horizontal):
-                            target_piece.sideUp[i] = target_piece.pieceData[0][i]
-                            target_piece.sideDown[i] = target_piece.pieceData[-1][i]
+                            if (target_piece.pieceData[0][i] == 0).all():
+                                target_piece.sideUp[i] = target_piece.pieceData[1][i]    
+                            else:
+                                target_piece.sideUp[i] = target_piece.pieceData[0][i]
+                            if (target_piece.pieceData[-1][i] == 0).all():
+                                target_piece.sideDown[i] = target_piece.pieceData[-2][i]
+                            else:
+                                target_piece.sideDown[i] = target_piece.pieceData[-1][i]
 
                         for i in range(target_piece.size_vertical):
-                            target_piece.sideRight[i] = target_piece.pieceData[i][-1]
-                            target_piece.sideLeft[i] = target_piece.pieceData[i][0]
-                 
+                            if (target_piece.pieceData[i][-1] == 0).all():
+                                target_piece.sideRight[i] = target_piece.pieceData[i][-2]
+                            else:
+                                target_piece.sideRight[i] = target_piece.pieceData[i][-1]
+                            if (target_piece.pieceData[i][0] == 0).all():
+                                target_piece.sideLeft[i] = target_piece.pieceData[i][1]
+                            else:
+                                target_piece.sideLeft[i] = target_piece.pieceData[i][0]
+                                
 def find_neighbors(piece: Piece):
     piece.neighbors = [None for x in range(4)]
     DIFFERENCE_RATE_THRESHOLD = 0.4
