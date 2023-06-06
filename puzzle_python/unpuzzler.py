@@ -81,37 +81,10 @@ if __name__ == "__main__":
     black = np.zeros((pSize_vertical, pSize_horizontal, imgChn), dtype=np.uint8)
     blackPiece = Piece.Piece(-1, pSize_vertical, pSize_horizontal, imgChn, (0, 0), black, pCnt_total)
     temp = [blackPiece for x in range(pCnt_total)]
-    temp[0] = startPiece[0]
-    
-    next_i = [0]
-    trash = []
-    while True:
-        i = next_i[0]
-        if i in trash:
-            next_i.pop(0)
-            if len(next_i) == 0:
-                break
-            else:
-                continue
-        else:
-            if temp[i].neighbors[0] is not None:
-                temp[i - pCnt_row] = pList[temp[i].neighbors[0]]
-                next_i.append(i - pCnt_row)
-            if temp[i].neighbors[1] is not None:
-                temp[i + 1] = pList[temp[i].neighbors[1]]
-                next_i.append(i + 1)
-            if temp[i].neighbors[2] is not None:
-                temp[i + pCnt_row] = pList[temp[i].neighbors[2]]
-                next_i.append(i + pCnt_row)
-            if temp[i].neighbors[3] is not None:
-                temp[i - 1] = pList[temp[i].neighbors[3]]
-                next_i.append(i - 1)
-            next_i.pop(0)
-            trash.append(i)
+    temp = Piece.puzzle_of_number(temp, startPiece, pCnt_row, pList)
             
     # show and save result image
     filename = os.path.splitext(filename)[0] + "_solve.png"
     temp = drawP.combine_pieces(pSize_vertical, pSize_horizontal, pCnt_row, pCnt_column, pCnt_total, imgChn, temp)
-    print(temp.shape)
     drawP.draw_image(temp, filename + " - Solved Image")
     cv2.imwrite(filename, temp)
